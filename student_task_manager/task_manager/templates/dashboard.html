@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Task Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Chart JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body{
+            background:#f8f9fa;
+        }
+
+        .card{
+            border:none;
+            border-radius:15px;
+        }
+
+        .card-header{
+            font-weight:bold;
+        }
+
+        #taskChart,
+        #priorityChart{
+            width:300px !important;
+            height:300px !important;
+            margin:auto;
+        }
+
+        #monthlyChart{
+            height:350px !important;
+        }
+
+        .progress{
+            height:30px;
+            border-radius:20px;
+        }
+
+        .progress-bar{
+            font-size:15px;
+            font-weight:bold;
+        }
+
+        table td,
+        table th{
+            vertical-align:middle;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container mt-4">
+
+    <!-- Heading -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📊 Student Task Dashboard</h2>
+
+        <a href="{% url 'task_list' %}" class="btn btn-dark">
+            Back to Home
+        </a>
+    </div>
+
+    <!-- Summary Cards -->
+
+    <div class="row g-3">
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body text-center">
+                    <h1>{{ total_task }}</h1>
+                    <h5>Total Tasks</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body text-center">
+                    <h1>{{ completed_task }}</h1>
+                    <h5>Completed</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-danger text-white shadow">
+                <div class="card-body text-center">
+                    <h1>{{ pending_task }}</h1>
+                    <h5>Pending</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-warning shadow">
+                <div class="card-body text-center">
+                    <h1>{{ completion_percentage }}%</h1>
+                    <h5>Completion Rate</h5>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Priority Cards -->
+
+    <div class="row mt-4">
+
+        <div class="col-md-4">
+            <div class="card bg-danger text-white shadow">
+                <div class="card-body text-center">
+                    <h2>{{ high_priority }}</h2>
+                    <h5>High Priority</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-warning shadow">
+                <div class="card-body text-center">
+                    <h2>{{ medium_priority }}</h2>
+                    <h5>Medium Priority</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body text-center">
+                    <h2>{{ low_priority }}</h2>
+                    <h5>Low Priority</h5>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Progress -->
+
+    <div class="card shadow mt-4">
+
+        <div class="card-header bg-dark text-white">
+            Task Completion Progress
+        </div>
+
+        <div class="card-body">
+
+            <div class="progress">
+
+                <div class="progress-bar bg-success"
+                     role="progressbar"
+                     style="width: {{ completion_percentage }}%;">
+
+                    {{ completion_percentage }}%
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Charts -->
+
+    <div class="row mt-4">
+
+        <!-- Status Pie -->
+
+        <div class="col-lg-4 mb-3">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-dark text-white">
+                    Task Status
+                </div>
+
+                <div class="card-body text-center">
+                    <canvas id="taskChart"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Priority Pie -->
+
+        <div class="col-lg-4 mb-3">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-dark text-white">
+                    Task Priority
+                </div>
+
+                <div class="card-body text-center">
+                    <canvas id="priorityChart"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Monthly -->
+
+        <div class="col-lg-4 mb-3">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-dark text-white">
+                    Monthly Tasks
+                </div>
+
+                <div class="card-body">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Recent Tasks -->
+
+    <div class="card shadow mt-4">
+
+        <div class="card-header bg-dark text-white">
+            Recent Tasks
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-hover table-bordered">
+
+                <thead class="table-secondary">
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for task in recent_task %}
+
+                    <tr>
+
+                        <td>{{ task.id }}</td>
+
+                        <td>{{ task.title }}</td>
+
+                        <td>
+
+                            {% if task.completed %}
+
+                                <span class="badge bg-success">
+                                    Completed
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-danger">
+                                    Pending
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="3" class="text-center">
+                            No Tasks Available
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <div class="card shadow mt-4">
+
+    <div class="card-header bg-primary text-white">
+        Today's Tasks
+    </div>
+
+    <div class="card-body">
+
+        {% for task in today_task %}
+
+            <p>
+                <strong>{{ task.title }}</strong><br>
+
+                Priority: {{ task.priority }} <br>
+
+                {% if task.completed %}
+                    Status: Completed
+                {% else %}
+                    Status: Pending
+                {% endif %}
+            </p>
+
+            <hr>
+
+        {% empty %}
+
+            <p>No tasks for today.</p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+</div>
+
+<!-- Charts -->
+
+<script>
+
+new Chart(document.getElementById("taskChart"),{
+
+    type:'pie',
+
+    data:{
+
+        labels:['Completed','Pending'],
+
+        datasets:[{
+
+            data:[
+                {{ completed_task }},
+                {{ pending_task }}
+            ],
+
+            backgroundColor:[
+                '#198754',
+                '#dc3545'
+            ]
+
+        }]
+
+    },
+
+    options:{
+        responsive:true,
+        maintainAspectRatio:false
+    }
+
+});
+
+new Chart(document.getElementById("priorityChart"),{
+
+    type:'pie',
+
+    data:{
+
+        labels:['High','Medium','Low'],
+
+        datasets:[{
+
+            data:[
+                {{ high_priority }},
+                {{ medium_priority }},
+                {{ low_priority }}
+            ],
+
+            backgroundColor:[
+                '#dc3545',
+                '#ffc107',
+                '#198754'
+            ]
+
+        }]
+
+    },
+
+    options:{
+        responsive:true,
+        maintainAspectRatio:false
+    }
+
+});
+
+new Chart(document.getElementById("monthlyChart"),{
+
+    type:'bar',
+
+    data:{
+
+        labels:{{ months|safe }},
+
+        datasets:[{
+
+            label:'Tasks Created',
+
+            data:{{ counts|safe }},
+
+            backgroundColor:'#0d6efd',
+
+            borderRadius:8
+
+        }]
+
+    },
+
+    options:{
+
+        responsive:true,
+
+        plugins:{
+            legend:{
+                display:false
+            }
+        },
+
+        scales:{
+
+            y:{
+                beginAtZero:true,
+                ticks:{
+                    precision:0
+                }
+            }
+
+        }
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>

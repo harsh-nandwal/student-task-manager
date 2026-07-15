@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Details</title>
+
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header>
+        <h1>Task Details</h1>
+        <p>View complete information about your task.</p>
+    </header>
+
+    <hr>
+
+    <!-- ===== NAVIGATION ===== -->
+    <nav>
+        <a href="{% url 'task_list' %}">← Back to Task List</a>
+    </nav>
+
+    <hr>
+
+    <!-- ===== TASK DETAILS ===== -->
+    <main>
+        <section>
+
+            <p>Title: {{ task.title }}</p>
+            <p>Description: {{ task.description }}</p>
+            <p>Priority: {{ task.priority }}</p>
+            <p>Created At: {{ task.created_at|date:"d M Y, h:i A" }}</p>
+            <p>Deadline: {{ task.deadline|date:"d M Y" }}</p>
+            <p>Status:
+                {% if task.completed %}
+                    Completed
+                {% else %}
+                    Pending
+                {% endif %}
+            </p>
+
+        </section>
+
+        <hr>
+
+        <!-- ===== ACTIONS ===== -->
+        <section>
+
+            <a href="{% url 'update_task' task.id %}">
+                <button type="button">Update Task</button>
+            </a>
+
+            <a href="{% url 'delete_task' task.id %}">
+                <button type="button">Delete Task</button>
+            </a>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

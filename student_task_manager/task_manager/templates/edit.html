@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Task</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+
+    <header>
+        <h1>Update Your Task</h1>
+    </header>
+    
+    <section>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <input type="text" name="title" value="{{ task.title }}" required>
+            <br><br>
+            <textarea name="description" rows="4" cols="40">{{ task.description }}</textarea>
+            <br><br>
+            <input type="date" name="deadline" value="{{ task.deadline|date:'Y-m-d' }}">
+            <br><br>
+
+            <select name="priority">
+                <option value="Low" {% if task.priority == "Low" %}selected{% endif %}>Low</option>
+                <option value="Medium" {% if task.priority == "Medium" %}selected{% endif %}>Medium</option>
+                <option value="High" {% if task.priority == "High" %}selected{% endif %}>High</option>
+            </select>
+            <br><br>
+
+            <label>
+                <input type="checkbox" name="completed" {% if task.completed %}checked{% endif %}>Completed
+            </label>
+            <br><br>
+
+            <button type="submit">Update Task</button>
+
+        </form>
+
+    </section>
+
+    <section>
+        <a href="{% url 'task_list' %}">← Back to Home</a>
+    </section>
+
+</body>
+</html>

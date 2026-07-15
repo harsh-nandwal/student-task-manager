@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header>
+        <h1>Create Account</h1>
+        <p>Register to start managing your tasks.</p>
+    </header>
+
+    <hr>
+
+    <!-- ===== MESSAGE ===== -->
+    {% if messages %}
+    <section>
+        {% for message in messages %}
+            <p class="message">{{ message }}</p>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    <!-- ===== REGISTER FORM ===== -->
+    <main>
+        <section>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <label for="username">Username</label><br>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                <br><br>
+                <label for="password">Password</label><br>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <br><br>
+                <button type="submit">Register</button>
+
+            </form>
+
+        </section>
+    </main>
+
+    <hr>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <p>
+            Already have an account?
+            <a href="{% url 'login' %}">Login</a>
+        </p>
+    </footer>
+
+</body>
+</html>

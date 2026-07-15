@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Task</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+
+    <header>
+        <h1>Add New Task</h1>
+    </header>
+
+    <section>
+        <form method="POST">
+            {% csrf_token %}
+
+            <input type="text" name="title" placeholder="Enter title" required>
+            <br><br>
+            <textarea name="description" placeholder="Enter description" rows="4" required></textarea>
+            <br><br>
+            <input type="date" name="deadline" required>
+            <br><br>
+
+            <select name="priority">
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+            </select>
+            <br><br>
+
+            <label>
+                <input type="checkbox" name="completed">Completed
+            </label>
+            <br><br>
+            <button type="submit">Add Task</button>
+
+        </form>
+    </section>
+
+    <section>
+        <a href="{% url 'task_list' %}">← Back to Home</a>
+    </section>
+    
+
+</body>
+</html>
